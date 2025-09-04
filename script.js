@@ -31,6 +31,7 @@ const questions = [
 ]
 
 //your JS code here.
+//your JS code here.
 
 const questionsElement = document.getElementById("questions");
 const submitBtn = document.getElementById("submit");
@@ -46,9 +47,17 @@ if (savedScore !== null) {
 }
 
 // Handle choice selection and save progress
-function handleChoice(i, choice) {
+function handleChoice(i, choice, choiceElement) {
   userAnswers[i] = choice;
   sessionStorage.setItem("progress", JSON.stringify(userAnswers));
+
+  // Reset checked attribute for all in this group
+  document
+    .querySelectorAll(`input[name="question-${i}"]`)
+    .forEach(el => el.removeAttribute("checked"));
+
+  // Add checked="true" for Cypress visibility
+  choiceElement.setAttribute("checked", "true");
 }
 
 // Display the quiz questions and choices
@@ -72,9 +81,12 @@ function renderQuestions() {
       // restore checked state from session storage
       if (userAnswers[i] === choice) {
         choiceElement.checked = true;
+        choiceElement.setAttribute("checked", "true"); // ✅ ensure Cypress sees it
       }
 
-      choiceElement.addEventListener("change", () => handleChoice(i, choice));
+      choiceElement.addEventListener("change", () =>
+        handleChoice(i, choice, choiceElement)
+      );
 
       const label = document.createElement("label");
       label.innerText = choice;
